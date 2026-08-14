@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reservations — Recipe Secret</title>
+<style>
+  :root {
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface-alt: #eef3f9;
+    --text: #16273f;
+    --text-muted: #5c6b80;
+    --accent: #a8801f;
+    --accent-hover: #8f6b16;
+    --accent-soft: #f6ecd2;
+    --brand-navy: #1e3a5f;
+    --border: #dbe3ee;
+    --shadow: 0 4px 14px rgba(20, 40, 70, 0.08);
+    --error: #b3261e;
+    --error-soft: #fbeae8;
+    --success: #2b7a4b;
+    --success-soft: #e6f4ea;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0e1b2c;
+    --surface: #16273c;
+    --surface-alt: #1c3350;
+    --text: #eef2f8;
+    --text-muted: #a9b8cb;
+    --accent: #d4af37;
+    --accent-hover: #e6c352;
+    --accent-soft: #3a2f16;
+    --brand-navy: #0a1522;
+    --border: #29435f;
+    --shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    --error: #ff8a80;
+    --error-soft: #3a1a17;
+    --success: #7fd99a;
+    --success-soft: #163a24;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1b2c;
+      --surface: #16273c;
+      --surface-alt: #1c3350;
+      --text: #eef2f8;
+      --text-muted: #a9b8cb;
+      --accent: #d4af37;
+      --accent-hover: #e6c352;
+      --accent-soft: #3a2f16;
+      --brand-navy: #0a1522;
+      --border: #29435f;
+      --shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+      --error: #ff8a80;
+      --error-soft: #3a1a17;
+      --success: #7fd99a;
+      --success-soft: #163a24;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  header {
+    padding: 4.5rem 1.5rem 3.5rem;
+    text-align: center;
+    background:
+      radial-gradient(circle at 20% 20%, var(--accent-soft), transparent 55%),
+      radial-gradient(circle at 80% 0%, var(--surface-alt), transparent 50%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .site-nav {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .site-nav a {
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    box-shadow: var(--shadow);
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .site-nav a:hover { border-color: var(--accent); color: var(--accent); }
+
+  .site-nav a.current {
+    color: var(--brand-navy);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  :root[data-theme="dark"] .site-nav a.current { color: var(--accent); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .site-nav a.current { color: var(--accent); }
+  }
+
+  .theme-toggle {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  .eyebrow {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  header p.subtitle {
+    max-width: 42rem;
+    margin: 0 auto;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  .hours-banner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 1.1rem 1.5rem;
+    margin-bottom: 2.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .hours-banner strong { color: var(--text); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+  }
+
+  .card h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.3rem;
+  }
+
+  .card .card-sub {
+    margin: 0 0 1.75rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  form { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 560px) {
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  input, select, textarea {
+    font: inherit;
+    padding: 0.7rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  textarea { resize: vertical; min-height: 4.5rem; }
+
+  .field-hint {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+
+  .field-error {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--error);
+    display: none;
+  }
+
+  label.invalid input,
+  label.invalid select,
+  label.invalid textarea {
+    border-color: var(--error);
+  }
+
+  label.invalid .field-error { display: block; }
+
+  .availability {
+    display: none;
+    margin-top: -0.5rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .availability strong { color: var(--text); }
+
+  .availability.full {
+    background: var(--error-soft);
+    border-color: var(--error);
+    color: var(--error);
+  }
+
+  .availability.full strong { color: var(--error); }
+
+  .submit-btn {
+    align-self: flex-start;
+    background: var(--brand-navy);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.8rem 1.8rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .submit-btn:hover { background: var(--accent-hover); color: var(--brand-navy); }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .form-banner {
+    display: none;
+    padding: 0.9rem 1rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .form-banner.error {
+    display: block;
+    background: var(--error-soft);
+    color: var(--error);
+  }
+
+  .confirmation {
+    display: none;
+    text-align: center;
+  }
+
+  .confirmation .check {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--success-soft);
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin: 0 auto 1rem;
+  }
+
+  .confirmation h2 { margin: 0 0 0.5rem; }
+  .confirmation p { color: var(--text-muted); margin: 0 0 1.5rem; }
+
+  .confirmation .summary {
+    text-align: left;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .confirmation .summary strong { color: var(--text); }
+
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .upcoming {
+    margin-top: 2.5rem;
+  }
+
+  .upcoming h3 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+  }
+
+  .reservation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: var(--shadow);
+  }
+
+  .reservation-item .info { font-size: 0.88rem; line-height: 1.5; }
+  .reservation-item .info strong { color: var(--text); }
+  .reservation-item .info span.muted { color: var(--text-muted); }
+
+  .cancel-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .cancel-btn:hover { border-color: var(--error); color: var(--error); }
+
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem 3rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+    line-height: 1.7;
+  }
+
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="site-nav">
+    <a href="index.html">Recipes</a>
+    <a href="reservation.html" class="current">Reservations</a>
+  </nav>
+  <button class="theme-toggle" id="themeToggle" type="button">🌙 Dark</button>
+  <div class="eyebrow">Reserve Your Table</div>
+  <h1>Book a Seat for Dinner</h1>
+  <p class="subtitle">We open our doors each evening for one seating of unforgettable Asian and Mediterranean flavors. Reserve ahead — our dining room holds just 20 guests a night.</p>
+</header>
+
+<main>
+  <div class="hours-banner">
+    <span>🕔 Dinner only: <strong>5:00 PM – 10:00 PM</strong></span>
+    <span>🍽️ Last seating: <strong>9:30 PM</strong></span>
+    <span>👥 Max party size: <strong>20 guests</strong></span>
+  </div>
+
+  <div class="card">
+    <div id="formView">
+      <h2>Make a Reservation</h2>
+      <p class="card-sub">Fields marked with an asterisk are required.</p>
+
+      <div class="form-banner error" id="formBanner"></div>
+
+      <form id="reservationForm" novalidate>
+        <div class="form-row">
+          <label id="nameField">
+            Full name *
+            <input type="text" id="nameInput" autocomplete="name" placeholder="Jane Doe">
+            <span class="field-error">Please enter your name.</span>
+          </label>
+          <label id="phoneField">
+            Phone number *
+            <input type="tel" id="phoneInput" autocomplete="tel" placeholder="(555) 123-4567">
+            <span class="field-error">Please enter a phone number.</span>
+          </label>
+        </div>
+
+        <label id="emailField">
+          Email *
+          <input type="email" id="emailInput" autocomplete="email" placeholder="jane@example.com">
+          <span class="field-error">Please enter a valid email address.</span>
+        </label>
+
+        <div class="form-row">
+          <label id="dateField">
+            Date *
+            <input type="date" id="dateInput">
+            <span class="field-error">Please choose a valid date.</span>
+          </label>
+          <label id="timeField">
+            Time *
+            <select id="timeInput">
+              <option value="">Select a time</option>
+              <option value="17:00">5:00 PM</option>
+              <option value="17:30">5:30 PM</option>
+              <option value="18:00">6:00 PM</option>
+              <option value="18:30">6:30 PM</option>
+              <option value="19:00">7:00 PM</option>
+              <option value="19:30">7:30 PM</option>
+              <option value="20:00">8:00 PM</option>
+              <option value="20:30">8:30 PM</option>
+              <option value="21:00">9:00 PM</option>
+              <option value="21:30">9:30 PM</option>
+            </select>
+            <span class="field-error">Please select a dinner time.</span>
+          </label>
+        </div>
+
+        <label id="partyField">
+          Party size *
+          <input type="number" id="partyInput" min="1" max="20" placeholder="e.g. 4">
+          <span class="field-hint">We seat parties of up to 20 guests per evening.</span>
+          <span class="field-error">Enter a party size between 1 and 20.</span>
+        </label>
+
+        <div class="availability" id="availabilityBox"></div>
+
+        <label id="notesField">
+          Special requests
+          <textarea id="notesInput" placeholder="Allergies, celebrations, seating preferences..."></textarea>
+        </label>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Confirm Reservation</button>
+      </form>
+    </div>
+
+    <div class="confirmation" id="confirmationView">
+      <div class="check">✓</div>
+      <h2>Reservation Confirmed</h2>
+      <p>We've saved your table. See you soon!</p>
+      <div class="summary" id="confirmationSummary"></div>
+      <button class="link-btn" id="bookAnotherBtn">Book another reservation</button>
+    </div>
+  </div>
+
+  <div class="upcoming" id="upcomingSection" style="display:none;">
+    <h3>Your Upcoming Reservations</h3>
+    <div id="upcomingList"></div>
+  </div>
+</main>
+
+<footer>
+  &copy; <span id="year"></span> Recipe Secret. Dinner service only — doors open at 5:00 PM.
+</footer>
+
+<script>
+  const STORAGE_KEY = "restaurant-reservations";
+  const MAX_CAPACITY = 20;
+  const DINNER_SLOTS = ["17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30"];
+
+  function loadReservations() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveReservations(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  let reservations = loadReservations();
+
+  function bookedSeats(date, time) {
+    return reservations
+      .filter(r => r.date === date && r.time === time)
+      .reduce((sum, r) => sum + r.partySize, 0);
+  }
+
+  function formatTime(value) {
+    const [h, m] = value.split(":").map(Number);
+    const period = h >= 12 ? "PM" : "AM";
+    const hour12 = ((h + 11) % 12) + 1;
+    return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+  }
+
+  function formatDate(value) {
+    const d = new Date(value + "T00:00:00");
+    return d.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  }
+
+  const form = document.getElementById("reservationForm");
+  const formBanner = document.getElementById("formBanner");
+  const nameInput = document.getElementById("nameInput");
+  const emailInput = document.getElementById("emailInput");
+  const phoneInput = document.getElementById("phoneInput");
+  const dateInput = document.getElementById("dateInput");
+  const timeInput = document.getElementById("timeInput");
+  const partyInput = document.getElementById("partyInput");
+  const notesInput = document.getElementById("notesInput");
+  const availabilityBox = document.getElementById("availabilityBox");
+  const submitBtn = document.getElementById("submitBtn");
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  dateInput.min = todayStr;
+
+  function updateAvailability() {
+    const date = dateInput.value;
+    const time = timeInput.value;
+    if (!date || !time) {
+      availabilityBox.style.display = "none";
+      return;
+    }
+    const booked = bookedSeats(date, time);
+    const remaining = MAX_CAPACITY - booked;
+    availabilityBox.style.display = "block";
+    if (remaining <= 0) {
+      availabilityBox.className = "availability full";
+      availabilityBox.innerHTML = `<strong>Fully booked</strong> for ${formatTime(time)} on ${formatDate(date)}. Please choose another time.`;
+    } else {
+      availabilityBox.className = "availability";
+      availabilityBox.innerHTML = `<strong>${remaining} of ${MAX_CAPACITY}</strong> seats remaining for ${formatTime(time)} on ${formatDate(date)}.`;
+    }
+  }
+
+  dateInput.addEventListener("change", updateAvailability);
+  timeInput.addEventListener("change", updateAvailability);
+
+  function setFieldError(fieldId, isInvalid) {
+    document.getElementById(fieldId).classList.toggle("invalid", isInvalid);
+  }
+
+  function validate() {
+    let valid = true;
+    formBanner.style.display = "none";
+
+    const nameOk = nameInput.value.trim().length > 0;
+    setFieldError("nameField", !nameOk);
+    valid = valid && nameOk;
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+    setFieldError("emailField", !emailOk);
+    valid = valid && emailOk;
+
+    const phoneOk = phoneInput.value.trim().length >= 7;
+    setFieldError("phoneField", !phoneOk);
+    valid = valid && phoneOk;
+
+    const dateOk = !!dateInput.value && dateInput.value >= todayStr;
+    setFieldError("dateField", !dateOk);
+    valid = valid && dateOk;
+
+    const timeOk = DINNER_SLOTS.includes(timeInput.value);
+    setFieldError("timeField", !timeOk);
+    valid = valid && timeOk;
+
+    const party = parseInt(partyInput.value, 10);
+    const partyOk = Number.isInteger(party) && party >= 1 && party <= MAX_CAPACITY;
+    setFieldError("partyField", !partyOk);
+    valid = valid && partyOk;
+
+    if (dateOk && timeOk && partyOk) {
+      const remaining = MAX_CAPACITY - bookedSeats(dateInput.value, timeInput.value);
+      if (party > remaining) {
+        valid = false;
+        formBanner.style.display = "block";
+        formBanner.textContent = remaining > 0
+          ? `Only ${remaining} seat(s) left for that time — please reduce your party size or pick another slot.`
+          : `That time slot is fully booked. Please choose another time.`;
+      }
+    }
+
+    return valid;
+  }
+
+  function renderUpcoming() {
+    const upcomingSection = document.getElementById("upcomingSection");
+    const upcomingList = document.getElementById("upcomingList");
+    const mine = reservations
+      .filter(r => r.date >= todayStr)
+      .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+    if (mine.length === 0) {
+      upcomingSection.style.display = "none";
+      return;
+    }
+
+    upcomingSection.style.display = "block";
+    upcomingList.innerHTML = "";
+    mine.forEach(r => {
+      const row = document.createElement("div");
+      row.className = "reservation-item";
+      row.innerHTML = `
+        <div class="info">
+          <strong>${formatDate(r.date)}</strong> at <strong>${formatTime(r.time)}</strong>
+          <br><span class="muted">${r.name} · Party of ${r.partySize}</span>
+        </div>
+        <button class="cancel-btn" data-id="${r.id}">Cancel</button>
+      `;
+      upcomingList.appendChild(row);
+    });
+  }
+
+  document.getElementById("upcomingList").addEventListener("click", (e) => {
+    const btn = e.target.closest(".cancel-btn");
+    if (!btn) return;
+    reservations = reservations.filter(r => r.id !== btn.dataset.id);
+    saveReservations(reservations);
+    renderUpcoming();
+    updateAvailability();
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const reservation = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      name: nameInput.value.trim(),
+      email: emailInput.value.trim(),
+      phone: phoneInput.value.trim(),
+      date: dateInput.value,
+      time: timeInput.value,
+      partySize: parseInt(partyInput.value, 10),
+      notes: notesInput.value.trim(),
+      createdAt: new Date().toISOString()
+    };
+
+    reservations.push(reservation);
+    saveReservations(reservations);
+
+    document.getElementById("confirmationSummary").innerHTML = `
+      <strong>${reservation.name}</strong><br>
+      ${formatDate(reservation.date)} at ${formatTime(reservation.time)}<br>
+      Party of ${reservation.partySize}<br>
+      ${reservation.email} · ${reservation.phone}
+      ${reservation.notes ? `<br><br><em>${reservation.notes}</em>` : ""}
+    `;
+
+    document.getElementById("formView").style.display = "none";
+    document.getElementById("confirmationView").style.display = "block";
+    renderUpcoming();
+    form.reset();
+  });
+
+  document.getElementById("bookAnotherBtn").addEventListener("click", () => {
+    document.getElementById("confirmationView").style.display = "none";
+    document.getElementById("formView").style.display = "block";
+    availabilityBox.style.display = "none";
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const themeToggle = document.getElementById("themeToggle");
+  const THEME_KEY = "recipe-secret-theme";
+
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      themeToggle.textContent = "☀️ Light";
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+      themeToggle.textContent = "🌙 Dark";
+    }
+  }
+
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme(savedTheme || (prefersDark ? "dark" : "light"));
+
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem(THEME_KEY, next);
+  });
+
+  renderUpcoming();
+</script>
+
+</body>
+</html>

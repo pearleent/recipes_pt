@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Bookings</title>
+<style>
+  :root {
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface-alt: #eef3f9;
+    --text: #16273f;
+    --text-muted: #5c6b80;
+    --accent: #a8801f;
+    --accent-hover: #8f6b16;
+    --accent-soft: #f6ecd2;
+    --brand-navy: #1e3a5f;
+    --border: #dbe3ee;
+    --shadow: 0 4px 14px rgba(20, 40, 70, 0.08);
+    --error: #b3261e;
+    --error-soft: #fbeae8;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0e1b2c;
+    --surface: #16273c;
+    --surface-alt: #1c3350;
+    --text: #eef2f8;
+    --text-muted: #a9b8cb;
+    --accent: #d4af37;
+    --accent-hover: #e6c352;
+    --accent-soft: #3a2f16;
+    --brand-navy: #0a1522;
+    --border: #29435f;
+    --shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    --error: #ff8a80;
+    --error-soft: #3a1a17;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1b2c;
+      --surface: #16273c;
+      --surface-alt: #1c3350;
+      --text: #eef2f8;
+      --text-muted: #a9b8cb;
+      --accent: #d4af37;
+      --accent-hover: #e6c352;
+      --accent-soft: #3a2f16;
+      --brand-navy: #0a1522;
+      --border: #29435f;
+      --shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+      --error: #ff8a80;
+      --error-soft: #3a1a17;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  header {
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+    background:
+      radial-gradient(circle at 20% 20%, var(--accent-soft), transparent 55%),
+      radial-gradient(circle at 80% 0%, var(--surface-alt), transparent 50%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .site-nav {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .site-nav a {
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    box-shadow: var(--shadow);
+  }
+
+  .site-nav a:hover { border-color: var(--accent); color: var(--accent); }
+
+  .theme-toggle {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  .eyebrow {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+
+  h1 { margin: 0 0 0.5rem; font-size: clamp(1.8rem, 4vw, 2.4rem); }
+
+  header p.subtitle {
+    max-width: 40rem;
+    margin: 0 auto;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .device-notice {
+    max-width: 40rem;
+    margin: 1rem auto 0;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 5rem;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .toolbar .filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); }
+
+  .filter-btn.active {
+    background: var(--brand-navy);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 1rem 1.25rem;
+  }
+
+  .stat-card .num { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+  .stat-card .label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  thead th {
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    background: var(--surface-alt);
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody td {
+    padding: 0.85rem 1rem;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-alt); }
+
+  .past-row { opacity: 0.55; }
+
+  .notes-cell { color: var(--text-muted); font-style: italic; max-width: 220px; }
+
+  .cancel-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .cancel-btn:hover { border-color: var(--error); color: var(--error); }
+
+  .empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 3rem 1rem;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+  }
+
+  .table-wrap { overflow-x: auto; }
+
+  @media (max-width: 700px) {
+    table { font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="site-nav">
+    <a href="index.html">Recipes</a>
+    <a href="reservation.html">Reservations</a>
+  </nav>
+  <button class="theme-toggle" id="themeToggle" type="button">🌙 Dark</button>
+  <div class="eyebrow">Owner View</div>
+  <h1>Booking Admin</h1>
+  <p class="subtitle">All reservations captured through the booking form, seat counts, and quick cancellation.</p>
+  <div class="device-notice">⚠️ This site has no backend — bookings only exist in this browser's storage. A reservation made on a customer's own phone or another computer will not appear here.</div>
+</header>
+
+<main>
+  <div class="stats" id="statsRow"></div>
+
+  <div class="toolbar">
+    <div class="filters" id="filterBar">
+      <button class="filter-btn active" data-filter="upcoming">Upcoming</button>
+      <button class="filter-btn" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="past">Past</button>
+    </div>
+  </div>
+
+  <div class="table-wrap" id="tableWrap"></div>
+  <p class="empty-state" id="emptyState" style="display:none;">No reservations to show.</p>
+</main>
+
+<script>
+  const STORAGE_KEY = "restaurant-reservations";
+  const MAX_CAPACITY = 20;
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  function loadReservations() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveReservations(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  function formatTime(value) {
+    const [h, m] = value.split(":").map(Number);
+    const period = h >= 12 ? "PM" : "AM";
+    const hour12 = ((h + 11) % 12) + 1;
+    return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+  }
+
+  function formatDate(value) {
+    const d = new Date(value + "T00:00:00");
+    return d.toLocaleDateString(undefined, { weekday: "short", year: "numeric", month: "short", day: "numeric" });
+  }
+
+  let reservations = loadReservations();
+  let activeFilter = "upcoming";
+
+  const filterBar = document.getElementById("filterBar");
+  const tableWrap = document.getElementById("tableWrap");
+  const emptyState = document.getElementById("emptyState");
+  const statsRow = document.getElementById("statsRow");
+
+  function renderStats() {
+    const upcoming = reservations.filter(r => r.date >= todayStr);
+    const totalGuestsUpcoming = upcoming.reduce((s, r) => s + r.partySize, 0);
+    const uniqueNights = new Set(upcoming.map(r => r.date)).size;
+
+    statsRow.innerHTML = `
+      <div class="stat-card"><div class="num">${reservations.length}</div><div class="label">Total Bookings</div></div>
+      <div class="stat-card"><div class="num">${upcoming.length}</div><div class="label">Upcoming Bookings</div></div>
+      <div class="stat-card"><div class="num">${totalGuestsUpcoming}</div><div class="label">Upcoming Guests</div></div>
+      <div class="stat-card"><div class="num">${uniqueNights}</div><div class="label">Nights Booked</div></div>
+    `;
+  }
+
+  function renderTable() {
+    let list = [...reservations].sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+    if (activeFilter === "upcoming") {
+      list = list.filter(r => r.date >= todayStr);
+    } else if (activeFilter === "past") {
+      list = list.filter(r => r.date < todayStr).reverse();
+    }
+
+    if (list.length === 0) {
+      tableWrap.innerHTML = "";
+      emptyState.style.display = "block";
+      return;
+    }
+    emptyState.style.display = "none";
+
+    const rows = list.map(r => {
+      const isPast = r.date < todayStr;
+      return `
+        <tr class="${isPast ? "past-row" : ""}">
+          <td>${formatDate(r.date)}<br><span style="color:var(--text-muted)">${formatTime(r.time)}</span></td>
+          <td>${r.name}</td>
+          <td>${r.email}<br><span style="color:var(--text-muted)">${r.phone}</span></td>
+          <td>${r.partySize}</td>
+          <td class="notes-cell">${r.notes ? r.notes : "—"}</td>
+          <td><button class="cancel-btn" data-id="${r.id}">Remove</button></td>
+        </tr>
+      `;
+    }).join("");
+
+    tableWrap.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Date &amp; Time</th>
+            <th>Guest</th>
+            <th>Contact</th>
+            <th>Party</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
+  function renderAll() {
+    renderStats();
+    renderTable();
+  }
+
+  filterBar.addEventListener("click", (e) => {
+    const btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    activeFilter = btn.dataset.filter;
+    [...filterBar.children].forEach(b => b.classList.toggle("active", b === btn));
+    renderTable();
+  });
+
+  tableWrap.addEventListener("click", (e) => {
+    const btn = e.target.closest(".cancel-btn");
+    if (!btn) return;
+    if (!confirm("Remove this reservation?")) return;
+    reservations = reservations.filter(r => r.id !== btn.dataset.id);
+    saveReservations(reservations);
+    renderAll();
+  });
+
+  const themeToggle = document.getElementById("themeToggle");
+  const THEME_KEY = "recipe-secret-theme";
+
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      themeToggle.textContent = "☀️ Light";
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+      themeToggle.textContent = "🌙 Dark";
+    }
+  }
+
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme(savedTheme || (prefersDark ? "dark" : "light"));
+
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem(THEME_KEY, next);
+  });
+
+  renderAll();
+</script>
+
+</body>
+</html>

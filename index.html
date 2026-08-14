@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Secret — Asian &amp; Mediterranean Recipes</title>
+<style>
+  :root {
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface-alt: #eef3f9;
+    --text: #16273f;
+    --text-muted: #5c6b80;
+    --accent: #a8801f;
+    --accent-hover: #8f6b16;
+    --accent-soft: #f6ecd2;
+    --brand-navy: #1e3a5f;
+    --border: #dbe3ee;
+    --shadow: 0 4px 14px rgba(20, 40, 70, 0.08);
+    --tag-asian-bg: #e6edf6;
+    --tag-asian-text: #1e3a5f;
+    --tag-med-bg: #f8efd6;
+    --tag-med-text: #8a6d1f;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0e1b2c;
+    --surface: #16273c;
+    --surface-alt: #1c3350;
+    --text: #eef2f8;
+    --text-muted: #a9b8cb;
+    --accent: #d4af37;
+    --accent-hover: #e6c352;
+    --accent-soft: #3a2f16;
+    --brand-navy: #0a1522;
+    --border: #29435f;
+    --shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    --tag-asian-bg: #1c3350;
+    --tag-asian-text: #a9c9ea;
+    --tag-med-bg: #3a2f16;
+    --tag-med-text: #e6c352;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1b2c;
+      --surface: #16273c;
+      --surface-alt: #1c3350;
+      --text: #eef2f8;
+      --text-muted: #a9b8cb;
+      --accent: #d4af37;
+      --accent-hover: #e6c352;
+      --accent-soft: #3a2f16;
+      --brand-navy: #0a1522;
+      --border: #29435f;
+      --shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+      --tag-asian-bg: #1c3350;
+      --tag-asian-text: #a9c9ea;
+      --tag-med-bg: #3a2f16;
+      --tag-med-text: #e6c352;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  header {
+    padding: 4.5rem 1.5rem 3.5rem;
+    text-align: center;
+    background:
+      radial-gradient(circle at 20% 20%, var(--accent-soft), transparent 55%),
+      radial-gradient(circle at 80% 0%, var(--surface-alt), transparent 50%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .theme-toggle {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  .site-nav {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .site-nav a {
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    box-shadow: var(--shadow);
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .site-nav a:hover { border-color: var(--accent); color: var(--accent); }
+
+  .site-nav a.current {
+    color: var(--brand-navy);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  :root[data-theme="dark"] .site-nav a.current { color: var(--accent); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .site-nav a.current { color: var(--accent); }
+  }
+
+  .eyebrow {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  header p.subtitle {
+    max-width: 42rem;
+    margin: 0 auto;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  .filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+
+  .filter-btn {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    padding: 0.55rem 1.2rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); }
+
+  .filter-btn.active {
+    background: var(--brand-navy);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.75rem;
+  }
+
+  .recipe-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .recipe-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(20, 40, 70, 0.14);
+  }
+
+  .card-media {
+    height: 170px;
+    background: var(--surface-alt);
+    overflow: hidden;
+  }
+
+  .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-body {
+    padding: 1.25rem 1.4rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+  }
+
+  .card-tag {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  .card-tag.asian { background: var(--tag-asian-bg); color: var(--tag-asian-text); }
+  .card-tag.mediterranean { background: var(--tag-med-bg); color: var(--tag-med-text); }
+
+  .card-body h3 {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+
+  .card-body p.desc {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .card-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  details.recipe-details {
+    margin-top: 0.5rem;
+  }
+
+  details.recipe-details summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    list-style: none;
+  }
+
+  details.recipe-details summary::-webkit-details-marker { display: none; }
+  details.recipe-details summary::before { content: "View recipe ▸"; }
+  details.recipe-details[open] summary::before { content: "Hide recipe ▾"; }
+
+  .recipe-details .section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    margin: 0.9rem 0 0.35rem;
+  }
+
+  .recipe-details ul, .recipe-details ol {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem 3rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+    line-height: 1.7;
+  }
+
+  footer a {
+    color: var(--accent);
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 3rem 0;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="site-nav">
+    <a href="index.html" class="current">Recipes</a>
+    <a href="reservation.html">Reservations</a>
+  </nav>
+  <button class="theme-toggle" id="themeToggle" type="button">🌙 Dark</button>
+  <div class="eyebrow">Asian &amp; Mediterranean Cuisine</div>
+  <h1>Flavors Worth Chasing</h1>
+  <p class="subtitle">Bold spice, open flame, and centuries of tradition — a hand-picked collection of Asian and Mediterranean recipes to bring the adventure straight to your kitchen.</p>
+</header>
+
+<main>
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-filter="all">All Recipes</button>
+    <button class="filter-btn" data-filter="asian">Asian</button>
+    <button class="filter-btn" data-filter="mediterranean">Mediterranean</button>
+  </div>
+
+  <div class="recipe-grid" id="recipeGrid"></div>
+  <p class="empty-state" id="emptyState">No recipes match this filter yet.</p>
+</main>
+
+<footer>
+  &copy; <span id="year"></span> Recipe Secret. Made with love, garlic, and soy sauce.
+  <br>Dish photos courtesy of <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> contributors, used under Creative Commons licenses.
+</footer>
+
+<script>
+  const RECIPES = [
+    {
+      id: "pad-thai",
+      title: "Classic Pad Thai",
+      cuisine: "asian",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Pad_Thai_en_Bangkok,_Tailandia_(23790424338).jpg/960px-Pad_Thai_en_Bangkok,_Tailandia_(23790424338).jpg",
+      time: "30 min",
+      serves: "3-4",
+      desc: "Stir-fried rice noodles with shrimp, tofu, egg, and a tangy tamarind sauce, finished with crushed peanuts and lime.",
+      ingredients: [
+        "8 oz flat rice noodles",
+        "2 tbsp tamarind paste",
+        "2 tbsp fish sauce",
+        "1.5 tbsp palm sugar",
+        "2 eggs",
+        "8 large shrimp, peeled",
+        "3 oz firm tofu, cubed",
+        "2 cups bean sprouts",
+        "3 cloves garlic, minced",
+        "Crushed peanuts, lime, scallions to finish"
+      ],
+      steps: [
+        "Soak rice noodles in warm water until pliable, then drain.",
+        "Whisk tamarind paste, fish sauce, and palm sugar into a sauce.",
+        "Stir-fry garlic, shrimp, and tofu in a hot wok until shrimp is pink.",
+        "Push aside, scramble eggs, then add noodles and sauce, tossing to combine.",
+        "Fold in bean sprouts, plate, and top with peanuts, lime, and scallions."
+      ]
+    },
+    {
+      id: "chicken-katsu",
+      title: "Chicken Katsu Curry",
+      cuisine: "asian",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Chicken_katsu_curry.jpg/960px-Chicken_katsu_curry.jpg",
+      time: "40 min",
+      serves: "4",
+      desc: "Crispy panko-breaded chicken cutlets served over rice with a mildly sweet, savory Japanese curry sauce.",
+      ingredients: [
+        "2 chicken breasts, butterflied",
+        "1 cup panko breadcrumbs",
+        "2 tbsp flour, 1 egg",
+        "1 onion, sliced",
+        "2 carrots, chunked",
+        "2 potatoes, chunked",
+        "3 cups chicken stock",
+        "1 block Japanese curry roux",
+        "Steamed rice, to serve"
+      ],
+      steps: [
+        "Simmer onion, carrot, and potato in stock until tender.",
+        "Stir in curry roux until the sauce thickens.",
+        "Dredge chicken in flour, egg, then panko; shallow-fry until golden and cooked through.",
+        "Slice chicken, serve over rice, and ladle curry sauce alongside."
+      ]
+    },
+    {
+      id: "kung-pao",
+      title: "Kung Pao Chicken",
+      cuisine: "asian",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Kung-pao-shanghai.jpg/960px-Kung-pao-shanghai.jpg",
+      time: "25 min",
+      serves: "4",
+      desc: "Spicy Sichuan stir-fry with diced chicken, roasted peanuts, and dried chilies in a glossy savory-sweet sauce.",
+      ingredients: [
+        "1 lb chicken thigh, diced",
+        "1/2 cup roasted peanuts",
+        "8 dried red chilies",
+        "1 tsp Sichuan peppercorns",
+        "3 scallions, chopped",
+        "2 tbsp soy sauce",
+        "1 tbsp black vinegar",
+        "1 tbsp cornstarch slurry"
+      ],
+      steps: [
+        "Marinate chicken briefly in soy sauce and cornstarch.",
+        "Toast chilies and peppercorns in oil until fragrant.",
+        "Stir-fry chicken until browned and nearly cooked through.",
+        "Add sauce ingredients and peanuts, tossing until glossy and thickened.",
+        "Finish with scallions and serve immediately."
+      ]
+    },
+    {
+      id: "bibimbap",
+      title: "Bibimbap Bowl",
+      cuisine: "asian",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Bibimbap_6.jpg/960px-Bibimbap_6.jpg",
+      time: "45 min",
+      serves: "2",
+      desc: "A Korean rice bowl piled with sautéed vegetables, marinated beef, a fried egg, and spicy gochujang sauce.",
+      ingredients: [
+        "2 cups cooked short-grain rice",
+        "4 oz beef bulgogi, thinly sliced",
+        "1 cup spinach, blanched",
+        "1 carrot, julienned",
+        "1 zucchini, julienned",
+        "1 cup bean sprouts",
+        "2 eggs, fried sunny-side up",
+        "2 tbsp gochujang, sesame oil"
+      ],
+      steps: [
+        "Sauté each vegetable separately with a little sesame oil and salt.",
+        "Marinate and quickly stir-fry the beef until caramelized.",
+        "Arrange rice in bowls, then top with vegetables and beef in sections.",
+        "Crown each bowl with a fried egg and a spoonful of gochujang.",
+        "Mix everything together at the table before eating."
+      ]
+    },
+    {
+      id: "greek-salad",
+      title: "Traditional Greek Salad",
+      cuisine: "mediterranean",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Greece_Food_Horiatiki.JPG/960px-Greece_Food_Horiatiki.JPG",
+      time: "15 min",
+      serves: "4",
+      desc: "Crisp cucumber, tomato, red onion, and Kalamata olives topped with a thick slab of feta and oregano.",
+      ingredients: [
+        "4 ripe tomatoes, cut into wedges",
+        "1 cucumber, sliced",
+        "1/2 red onion, thinly sliced",
+        "1/2 cup Kalamata olives",
+        "6 oz block feta cheese",
+        "1/4 cup extra virgin olive oil",
+        "1 tbsp red wine vinegar",
+        "1 tsp dried oregano"
+      ],
+      steps: [
+        "Combine tomatoes, cucumber, onion, and olives in a large bowl.",
+        "Whisk olive oil, vinegar, and a pinch of salt for the dressing.",
+        "Toss vegetables with dressing and divide among plates.",
+        "Top each plate with a slab of feta and a sprinkle of oregano."
+      ]
+    },
+    {
+      id: "chicken-shawarma",
+      title: "Chicken Shawarma Wraps",
+      cuisine: "mediterranean",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Shawarma_sandwich.jpg/960px-Shawarma_sandwich.jpg",
+      time: "35 min + marinating",
+      serves: "4",
+      desc: "Warmly spiced roasted chicken thighs wrapped in flatbread with garlic sauce, pickles, and fresh vegetables.",
+      ingredients: [
+        "1.5 lb chicken thighs",
+        "2 tbsp shawarma spice blend",
+        "3 cloves garlic, minced",
+        "2 tbsp lemon juice, 2 tbsp olive oil",
+        "4 flatbreads",
+        "1/2 cup garlic toum or yogurt sauce",
+        "Pickles, lettuce, tomato to serve"
+      ],
+      steps: [
+        "Marinate chicken in spices, garlic, lemon, and oil for at least 1 hour.",
+        "Roast or pan-sear chicken until charred at the edges and cooked through.",
+        "Slice chicken thinly.",
+        "Warm flatbreads and layer with chicken, sauce, and fresh vegetables.",
+        "Roll tightly and serve immediately."
+      ]
+    },
+    {
+      id: "falafel",
+      title: "Crispy Baked Falafel",
+      cuisine: "mediterranean",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Bowl_of_falafel.jpg/960px-Bowl_of_falafel.jpg",
+      time: "50 min",
+      serves: "4",
+      desc: "Herb-packed chickpea patties, baked until crisp outside and tender inside, served with tahini sauce.",
+      ingredients: [
+        "2 cups dried chickpeas, soaked overnight",
+        "1 small onion, chopped",
+        "3 cloves garlic",
+        "1 cup parsley and cilantro, packed",
+        "1 tsp cumin, 1 tsp coriander",
+        "1 tsp baking powder",
+        "3 tbsp tahini sauce, to serve"
+      ],
+      steps: [
+        "Pulse chickpeas, onion, garlic, herbs, and spices in a food processor until coarse.",
+        "Stir in baking powder and rest the mixture for 20 minutes.",
+        "Form into small patties and arrange on a lined baking sheet.",
+        "Brush with olive oil and bake at 400°F until golden, flipping once.",
+        "Serve warm with tahini sauce."
+      ]
+    },
+    {
+      id: "shakshuka",
+      title: "Shakshuka",
+      cuisine: "mediterranean",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Shakshuka_011.jpg/960px-Shakshuka_011.jpg",
+      time: "30 min",
+      serves: "3",
+      desc: "Eggs gently poached in a spiced tomato and bell pepper sauce, finished with feta and fresh herbs.",
+      ingredients: [
+        "2 tbsp olive oil",
+        "1 onion, diced",
+        "1 red bell pepper, diced",
+        "3 cloves garlic, minced",
+        "1 tsp cumin, 1 tsp paprika",
+        "28 oz can crushed tomatoes",
+        "5 eggs",
+        "Crumbled feta and parsley to finish"
+      ],
+      steps: [
+        "Sauté onion and bell pepper in olive oil until softened.",
+        "Add garlic and spices, cooking until fragrant.",
+        "Pour in crushed tomatoes and simmer until slightly thickened.",
+        "Make wells in the sauce and crack in the eggs; cover and cook until whites are set.",
+        "Top with feta and parsley, and serve with crusty bread."
+      ]
+    }
+  ];
+
+  const grid = document.getElementById("recipeGrid");
+  const emptyState = document.getElementById("emptyState");
+  const filterBar = document.getElementById("filterBar");
+  let activeFilter = "all";
+
+  function cuisineLabel(c) {
+    return c === "asian" ? "Asian" : "Mediterranean";
+  }
+
+  function render() {
+    grid.innerHTML = "";
+    const items = RECIPES.filter(r => activeFilter === "all" || r.cuisine === activeFilter);
+    emptyState.style.display = items.length ? "none" : "block";
+
+    items.forEach(r => {
+      const card = document.createElement("div");
+      card.className = "recipe-card";
+
+      const ingredientsHtml = r.ingredients.map(i => `<li>${i}</li>`).join("");
+      const stepsHtml = r.steps.map(s => `<li>${s}</li>`).join("");
+
+      card.innerHTML = `
+        <div class="card-media"><img src="${r.image}" alt="${r.title}" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag ${r.cuisine}">${cuisineLabel(r.cuisine)}</span>
+          <h3>${r.title}</h3>
+          <p class="desc">${r.desc}</p>
+          <div class="card-meta">
+            <span>⏱ ${r.time}</span>
+            <span>🍽 Serves ${r.serves}</span>
+          </div>
+          <details class="recipe-details">
+            <summary></summary>
+            <div class="section-title">Ingredients</div>
+            <ul>${ingredientsHtml}</ul>
+            <div class="section-title">Method</div>
+            <ol>${stepsHtml}</ol>
+          </details>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  filterBar.addEventListener("click", (e) => {
+    const btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    activeFilter = btn.dataset.filter;
+    [...filterBar.children].forEach(b => b.classList.toggle("active", b === btn));
+    render();
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const themeToggle = document.getElementById("themeToggle");
+  const THEME_KEY = "recipe-secret-theme";
+
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      themeToggle.textContent = "☀️ Light";
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+      themeToggle.textContent = "🌙 Dark";
+    }
+  }
+
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme(savedTheme || (prefersDark ? "dark" : "light"));
+
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem(THEME_KEY, next);
+  });
+
+  render();
+</script>
+
+</body>
+</html>
